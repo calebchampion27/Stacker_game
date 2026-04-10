@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include "pico/stdlib.h"
 
 #include "display.h"
@@ -42,6 +44,7 @@ int main() {
                 break;
 
             case STATE_MENU:  // show high score, get ready to play
+                leds_breathing();
                 if (button_pressed) {
                     current_score = 0;
                     current_state = STATE_PLAYING;
@@ -62,18 +65,20 @@ int main() {
                 break;
 
             case STATE_LEVEL_SUCCESS:  // set LEDs green, play music, wait, then go to menu
+                leds_green();
                 current_score++;
 
-                sleep_ms(5000);
+                sleep_ms(50000);  // sleep 5 sec
                 current_state = STATE_MENU;
                 break;
 
             case STATE_GAME_OVER:  // set LEDs to red, compare high scores, wait, then go to menu
+                leds_red();
                 if (current_score > high_score) {
                     high_score = current_score;
                 }
 
-
+                sleep_ms(50000);  // sleep 5 sec
                 current_state = STATE_MENU;
                 break;
         }
