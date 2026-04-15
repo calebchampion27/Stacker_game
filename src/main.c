@@ -34,10 +34,13 @@ int main() {
 
     // main loop
     while (true) {
-        // always read input potentiometer & button
+        // always read potentiometer & button
         current_volume = read_potentiometer();
+        current_volume = (current_volume * 100) / 4095;
+
         bool button_pressed = read_button();
 
+        
         switch (current_state) {
             case STATE_INIT:  // store high score, go to menu
                 current_state = STATE_MENU;
@@ -83,7 +86,7 @@ int main() {
                 break;
         }
         
-        sleep_ms(10);
+        sleep_ms(60);
     }
     return 0;
 }
