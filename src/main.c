@@ -9,7 +9,8 @@
 #include "controls.h"
 
 // global game states
-typedef enum {
+typedef enum
+{
     STATE_INIT,
     STATE_MENU,
     STATE_PLAYING,
@@ -20,86 +21,115 @@ typedef enum {
 // breathing led on timer
 volatile bool is_breathing = true;
 
-
-
-int main() {
+int main()
+{
     stdio_init_all();
 
     // initialize peripherals
-    display_init();  // pio for LED screen
-    led_init();  // pwm for RGB leds
-    eeprom_init();  // i2c setup
-    adc_volume_init();  // adc & gpio pins setup for volume/ potentiometer
+    display_init();    // pio for LED screen
+    led_init();        // pwm for RGB leds
+    eeprom_init();     // i2c setup
+    adc_volume_init(); // adc & gpio pins setup for volume/ potentiometer
 
     // initial variables & states
     GameState current_state = STATE_INIT;
     int high_score = 0;
     int current_score = 0;
-    int current_volume = 0;
-    bool won_game = false;
+    uint16_t current_volume = 0;
+    uint32_t state_start_time = 0;
+    int won_game = 0; // 0 = no continue game, 1 = yes, 2 = no end game
 
-    // set breathing light 
-    add_repeating_timer_ms(10, breathing_timer_callback, NULL, &timer);  // set timer for LEDs
+    // set breathing light
+    add_repeating_timer_ms(10, breathing_timer_callback, NULL, &timer); // set timer for LEDs
 
-    
 
     // main loop
-    while (true) {
+    while (true)
+    {
         // always read potentiometer & button
         current_volume = read_potentiometer();
-        current_volume = (current_volume * 100) / 4095;
         bool button_pressed = read_button();
-        
-        switch (current_state) {
-            case STATE_INIT:  // store high score, go to menu
-                current_state = STATE_MENU;
-                break;
 
-            case STATE_MENU:  // show high score, get ready to play
-                if (button_pressed) {
-                    current_score = 0;
-                    current_state = STATE_PLAYING;
+        switch (current_state)
+        {
+        case STATE_INIT: // store high score, go to menu
+            current_state = STATE_MENU;
+            break;
+
+        case STATE_MENU: // show high score, get ready to play
+            if (button_pressed)
+            {
+                current_score = 0;
+                current_state = STATE_PLAYING;
+            }
+            break;
+
+        case STATE_PLAYING:
+            if (button_pressed)
+            {
+                if (won_game == 1)
+                { // check if success
+                    current_state = STATE_LEVEL_SUCCESS;
+                    is_breathing = false;
+                    leds_green();
+
+                    // turn on sound
+                    start_continuous_tone(523); // 523 freq = C5 note
+                    set_volume(523, current_volume);
+                    state_start_time = to_ms_since_boot(get_absolute_time());
                 }
-                break;
+                else if (won_game == 2)
+                {
+                    current_state = STATE_GAME_OVER;
+                    is_breathing = false;
+                    leds_red();
 
-            case STATE_PLAYING:                
-                if (button_pressed) {
-                    if (won_game) {  // check if success
-                        current_state = STATE_LEVEL_SUCCESS;
-                    } else {
-                        current_state = STATE_GAME_OVER;
+                    // turn on sound
+                    start_continuous_tone(200); // low pitch
+                    set_volume(200, current_volume);
+                    state_start_time = to_ms_since_boot(get_absolute_time());
+
+                    // store high score
+                    if (current_score > high_score)
+                    {
+                        high_score = current_score;
                     }
-
+                }
+                else
+                { // game is still playing (not won or lost)
                     // move another block back and fourth
+                    current_state = STATE_PLAYING;
+                    if (current_score > high_score)
+                    {
+                        high_score = current_score;
+                    }
                 }
-                break;
+            }
+            break;
 
-            case STATE_LEVEL_SUCCESS:  // set LEDs green, play music, wait, then go to menu
-                is_breathing = false;
-                leds_green();
-                current_score++;
-                sleep_ms(10000);  // sleep 10 sec
+        case STATE_LEVEL_SUCCESS: // set LEDs green, play music, wait, then go to menu
+            // turn off music and lights after 10 sec
+            set_volume(523, current_volume);
+
+            if (to_ms_since_boot(get_absolute_time()) - state_start_time >= 10000)
+            {
+                stop_tone();
                 is_breathing = true;
-
-                // go back to menu
                 current_state = STATE_MENU;
-                break;
+            }
+            break;
 
-            case STATE_GAME_OVER:  // set LEDs to red, compare high scores, wait, then go to menu
-                is_breathing = false;
-                leds_red();
-                if (current_score > high_score) {
-                    high_score = current_score;
-                }
+        case STATE_GAME_OVER: // set LEDs to red, wait, then go to menu
+            set_volume(200, current_volume);
 
-                sleep_ms(10000);  // sleep 10 sec
+            if (to_ms_since_boot(get_absolute_time()) - state_start_time >= 10000) {
+                stop_tone();
                 is_breathing = true;
-
-                // go back to menu
                 current_state = STATE_MENU;
+            }
                 break;
         }
-        
+
         sleep_ms(10);
     }
     return 0;
