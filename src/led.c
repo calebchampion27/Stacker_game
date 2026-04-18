@@ -7,7 +7,7 @@ int duty_cycle = 0;
 int color = 0;
 int dir = 0;
 
-led_init(void) {
+void led_init(void) {
   // set gpio pins to PWM
   gpio_set_function(LED_PIN_R, GPIO_FUNC_PWM);
   gpio_set_function(LED_PIN_G, GPIO_FUNC_PWM);
@@ -39,19 +39,19 @@ led_init(void) {
   pwm_set_enabled(slice_b, true);
 }
 
-leds_green(void) {
+void leds_green(void) {
   pwm_set_gpio_level(LED_PIN_R, 255);
   pwm_set_gpio_level(LED_PIN_G, 0);
   pwm_set_gpio_level(LED_PIN_B, 255);
 }
 
-leds_red(void) {
+void leds_red(void) {
   pwm_set_gpio_level(LED_PIN_R, 0);
   pwm_set_gpio_level(LED_PIN_G, 255);
   pwm_set_gpio_level(LED_PIN_B, 255);
 }
 
-leds_breathing(void) {
+void leds_breathing(void) {
   uint slice_num = pwm_gpio_to_slice_num(LED_PIN_R);
     // logic
     if (dir == 0 && duty_cycle == 100) {

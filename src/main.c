@@ -31,6 +31,7 @@ int main() {
     int high_score = 0;
     int current_score = 0;
     int current_volume = 0;
+    bool won_game = false;
 
     // main loop
     while (true) {
@@ -39,6 +40,15 @@ int main() {
         current_volume = (current_volume * 100) / 4095;
 
         bool button_pressed = read_button();
+
+
+
+        // testing
+        current_state = STATE_MENU;
+
+
+
+
 
         
         switch (current_state) {
@@ -56,14 +66,13 @@ int main() {
 
             case STATE_PLAYING:                
                 if (button_pressed) {
-                    if ( /*Success*/ ) {  // check if success
+                    if (won_game) {  // check if success
                         current_state = STATE_LEVEL_SUCCESS;
                     } else {
                         current_state = STATE_GAME_OVER;
                     }
 
                     // move another block back and fourth
-
                 }
                 break;
 

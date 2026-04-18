@@ -1,5 +1,7 @@
 #ifndef CONTROLS_H
 #define CONTROLS_H
+
+#include <stdint.h>
 #include <stdbool.h>
 
 #define POTENTIOMETER_PIN 45
@@ -9,7 +11,7 @@
 // code
 void adc_volume_init(void);
 
-int read_potentiometer(void);
+uint16_t read_potentiometer(void);
 
 bool read_button(void);
 

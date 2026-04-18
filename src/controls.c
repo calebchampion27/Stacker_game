@@ -1,9 +1,11 @@
 #include "controls.h"
 #include "pico/stdlib.h"
+#include <stdint.h>
+#include <stdbool.h>
 #include "hardware/adc.h"
 #include "hardware/gpio.h"
 
-adc_volume_init(void) {
+void adc_volume_init(void) {
   // potentiometer adc
   adc_init();
   adc_gpio_init(POTENTIOMETER_PIN);
@@ -14,13 +16,10 @@ adc_volume_init(void) {
   gpio_set_dir(BUTTON_PIN, false);
 }
 
-read_potentiometer(void) {
+uint16_t read_potentiometer(void) {
   return adc_read();  // single shot
 }
 
-read_button(void) {
-  bool button_press;
-  button_press = gpio_get(BUTTON_PIN);
-
-  return button_press;
+bool read_button(void) {
+  return gpio_get(BUTTON_PIN);
 }

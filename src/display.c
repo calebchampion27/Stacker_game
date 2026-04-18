@@ -3,11 +3,11 @@
 #include "hardware/pio.h"
 
 // code
-display_init(void) {
+void display_init(void) {
 
 
 }
 
-test(void) {
+void test(void) {
   
 }

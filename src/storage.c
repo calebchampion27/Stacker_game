@@ -3,3 +3,7 @@
 #include "hardware/i2c.h"
 
 // code
+void eeprom_init(void) {
+
+
+}
