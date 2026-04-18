@@ -86,7 +86,7 @@ int main() {
                 break;
         }
         
-        sleep_ms(60);
+        sleep_ms(10);
     }
     return 0;
 }
