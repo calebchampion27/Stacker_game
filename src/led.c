@@ -78,3 +78,13 @@ void leds_breathing(void) {
     pwm_set_gpio_level(LED_PIN_G, (color == 1) ? level : period);
     pwm_set_gpio_level(LED_PIN_B, (color == 2) ? level : period);
 }
+
+void set_breathing_state(bool state) {
+    is_breathing = state;
+}
+bool breathing_timer_callback(struct repeating_timer *t) {
+    if (is_breathing) {
+        leds_breathing();
+    }
+    return true; 
+}

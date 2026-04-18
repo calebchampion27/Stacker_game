@@ -19,15 +19,6 @@ typedef enum {
 
 // breathing led on timer
 volatile bool is_breathing = true;
-void set_breathing_state(bool state) {
-    is_breathing = state;
-}
-bool breathing_timer_callback(struct repeating_timer *t) {
-    if (is_breathing) {
-        leds_breathing();
-    }
-    return true; 
-}
 
 
 
@@ -48,9 +39,9 @@ int main() {
     bool won_game = false;
 
     // set breathing light 
-    struct repeating_timer timer;
-    add_repeating_timer_ms(10, breathing_timer_callback, NULL, &timer);
+    add_repeating_timer_ms(10, breathing_timer_callback, NULL, &timer);  // set timer for LEDs
 
+    
 
     // main loop
     while (true) {
