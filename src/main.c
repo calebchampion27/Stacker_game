@@ -17,6 +17,20 @@ typedef enum {
     STATE_GAME_OVER
 } GameState;
 
+// breathing led on timer
+volatile bool is_breathing = true;
+void set_breathing_state(bool state) {
+    is_breathing = state;
+}
+bool breathing_timer_callback(struct repeating_timer *t) {
+    if (is_breathing) {
+        leds_breathing();
+    }
+    return true; 
+}
+
+
+
 int main() {
     stdio_init_all();
 
@@ -26,30 +40,24 @@ int main() {
     eeprom_init();  // i2c setup
     adc_volume_init();  // adc & gpio pins setup for volume/ potentiometer
 
-    // initial variables 
+    // initial variables & states
     GameState current_state = STATE_INIT;
     int high_score = 0;
     int current_score = 0;
     int current_volume = 0;
     bool won_game = false;
 
+    // set breathing light 
+    struct repeating_timer timer;
+    add_repeating_timer_ms(10, breathing_timer_callback, NULL, &timer);
+
+
     // main loop
     while (true) {
         // always read potentiometer & button
         current_volume = read_potentiometer();
         current_volume = (current_volume * 100) / 4095;
-
         bool button_pressed = read_button();
-
-
-
-        // testing
-        current_state = STATE_MENU;
-
-
-
-
-
         
         switch (current_state) {
             case STATE_INIT:  // store high score, go to menu
@@ -57,7 +65,6 @@ int main() {
                 break;
 
             case STATE_MENU:  // show high score, get ready to play
-                leds_breathing();
                 if (button_pressed) {
                     current_score = 0;
                     current_state = STATE_PLAYING;
@@ -77,20 +84,27 @@ int main() {
                 break;
 
             case STATE_LEVEL_SUCCESS:  // set LEDs green, play music, wait, then go to menu
+                is_breathing = false;
                 leds_green();
                 current_score++;
+                sleep_ms(10000);  // sleep 10 sec
+                is_breathing = true;
 
-                sleep_ms(50000);  // sleep 5 sec
+                // go back to menu
                 current_state = STATE_MENU;
                 break;
 
             case STATE_GAME_OVER:  // set LEDs to red, compare high scores, wait, then go to menu
+                is_breathing = false;
                 leds_red();
                 if (current_score > high_score) {
                     high_score = current_score;
                 }
 
-                sleep_ms(50000);  // sleep 5 sec
+                sleep_ms(10000);  // sleep 10 sec
+                is_breathing = true;
+
+                // go back to menu
                 current_state = STATE_MENU;
                 break;
         }
