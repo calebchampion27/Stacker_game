@@ -38,6 +38,7 @@ int main()
     uint16_t current_volume = 0;
     uint32_t state_start_time = 0;
     int won_game = 0; // 0 = no continue game, 1 = yes, 2 = no end game
+    bool last_button_state = false;
 
     // set breathing light
     add_repeating_timer_ms(10, breathing_timer_callback, NULL, &timer); // set timer for LEDs
@@ -48,7 +49,11 @@ int main()
     {
         // always read potentiometer & button
         current_volume = read_potentiometer();
-        bool button_pressed = read_button();
+        bool current_button_state = read_button();
+        bool button_pressed = (current_button_state == true && last_button_state == false);
+        last_button_state = current_button_state;
+
+        
 
         switch (current_state)
         {
