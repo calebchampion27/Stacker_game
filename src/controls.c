@@ -20,6 +20,7 @@ void adc_volume_init(void) {
   // button init
   gpio_set_function(BUTTON_PIN, GPIO_FUNC_SIO);  // SIO function to gpio button
   gpio_set_dir(BUTTON_PIN, false);
+  gpio_pull_down(BUTTON_PIN);
 }
 
 // read potentiometer adc value

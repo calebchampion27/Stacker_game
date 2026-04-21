@@ -79,8 +79,8 @@ int main()
                         leds_green();
 
                         // turn on sound
-                        start_continuous_tone(523); // 523 freq = C5 note
-                        set_volume(523, current_volume);
+                        start_continuous_tone(500);
+                        set_volume(500, current_volume);
                         state_start_time = to_ms_since_boot(get_absolute_time());
                     }
                     else if (won_game == 2)
@@ -90,8 +90,8 @@ int main()
                         leds_red();
 
                         // turn on sound
-                        start_continuous_tone(200); // low pitch
-                        set_volume(200, current_volume);
+                        start_continuous_tone(150); // low pitch
+                        set_volume(150, current_volume);
                         state_start_time = to_ms_since_boot(get_absolute_time());
                     }
                     else
@@ -106,7 +106,7 @@ int main()
                 // turn off music and lights after 10 sec
                 set_volume(523, current_volume);
 
-                if (to_ms_since_boot(get_absolute_time()) - state_start_time >= 10000)
+                if (to_ms_since_boot(get_absolute_time()) - state_start_time >= 5000)
                 {
                     stop_tone();
                     is_breathing = true;
@@ -122,7 +122,7 @@ int main()
             case STATE_GAME_OVER: // set LEDs to red, wait, then go to menu
                 set_volume(200, current_volume);
 
-                if (to_ms_since_boot(get_absolute_time()) - state_start_time >= 10000) {
+                if (to_ms_since_boot(get_absolute_time()) - state_start_time >= 5000) {
                     stop_tone();
                     is_breathing = true;
                     current_state = STATE_MENU;
