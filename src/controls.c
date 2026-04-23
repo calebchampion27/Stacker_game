@@ -16,11 +16,6 @@ void adc_volume_init(void) {
 
   // sound init
   gpio_set_function(SOUND_PIN, GPIO_FUNC_PWM);
-
-  // button init
-  gpio_set_function(BUTTON_PIN, GPIO_FUNC_SIO);  // SIO function to gpio button
-  gpio_set_dir(BUTTON_PIN, false);
-  gpio_pull_down(BUTTON_PIN);
 }
 
 // read potentiometer adc value
@@ -54,9 +49,4 @@ void set_volume(int frequency, uint16_t volume_level) {
 // turn off sound
 void stop_tone(void) {
   pwm_set_gpio_level(SOUND_PIN, 0);
-}
-
-// read button value
-bool read_button(void) {
-  return gpio_get(BUTTON_PIN);
 }
