@@ -16,6 +16,11 @@ void adc_volume_init(void) {
 
   // sound init
   gpio_set_function(SOUND_PIN, GPIO_FUNC_PWM);
+
+  // added for reset button
+  gpio_init(RESET_BUTTON);
+  gpio_set_dir(RESET_BUTTON, GPIO_IN);
+  gpio_pull_up(RESET_BUTTON);
 }
 
 // read potentiometer adc value

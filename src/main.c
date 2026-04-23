@@ -18,6 +18,7 @@ int main() {
     eeprom_init();     // i2c setup
     adc_volume_init(); // adc & gpio pins setup for volume/ potentiometer
     int high_score = eeprom_read_score();
+    bool reset_high = true;
     add_repeating_timer_ms(10, breathing_timer_callback, NULL, &timer); // set timer for LEDs
     uint16_t current_volume = 0;
     
@@ -56,8 +57,13 @@ int main() {
     #define STACK_TOLERANCE 2
 
 while (true) {
-    // chceck for volume adjestment at every loop
-        current_volume = read_potentiometer();
+    reset_high = gpio_get(RESET_BUTTON);
+    if (!reset_high) {  // check for reset for eeprom
+        eeprom_write_score(0);
+        high_score = 0;
+    }
+    // check for volume adjestment at every loop
+    current_volume = read_potentiometer();
 
         // won or lost logic
         if (app_state == 2 || app_state == 3) {
@@ -85,13 +91,13 @@ while (true) {
                 last_press_time = get_absolute_time();
 
                 if (app_state == 0) {  // start game
-                    app_state     = 1;
-                    is_breathing  = false;
-                    num_frozen    = 0;
+                    app_state = 1;
+                    is_breathing = false;
+                    num_frozen = 0;
                     for (int i = 0; i < MAX_LAYERS; i++) frozen_y[i] = -1;
-                    active_y      = 0;
-                    active_dir    = 1;
-                    frame_delay   = 30;
+                    active_y = 0;
+                    active_dir = 1;
+                    frame_delay = 30;
                     frame_counter = 0;
 
                 } else if (app_state == 1) {  // move onto next block
@@ -116,14 +122,6 @@ while (true) {
                             state_start_time = get_absolute_time();
                             leds_red();
                             start_continuous_tone(150);
-                            
-                            // reset board variables
-                            num_frozen = 0;
-                            for (int i = 0; i < MAX_LAYERS; i++) frozen_y[i] = -1;
-                            active_y = 0;
-                            active_dir = 1;
-                            frame_delay = 30;
-                            frame_counter = 0;
                             last_button_state = current_button_state;
                             continue;
                         }
@@ -168,11 +166,11 @@ while (true) {
                 active_y += active_dir;
                 int y_limit = (num_frozen < 4) ? 19 : 26;
                 if (active_y >= y_limit) {
-                    active_y   = y_limit;
+                    active_y = y_limit;
                     active_dir = -1;
                 }
                 if (active_y <= 0) {
-                    active_y   = 0;
+                    active_y = 0;
                     active_dir = 1;
                 }
             }

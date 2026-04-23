@@ -5,6 +5,7 @@
 #include <stdbool.h>
 
 #define POTENTIOMETER_PIN 45
+#define RESET_BUTTON 20
 #define INPUT_SLICE_POT 5 // for potentiometer
 #define SOUND_PIN 25
 
