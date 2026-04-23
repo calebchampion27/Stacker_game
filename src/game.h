@@ -46,3 +46,5 @@ int col_x_start(int col);
 bool get_pixel_pair(int x, int y, int b_y, int xs, int col);
 
 void init_hub75_pio(PIO pio, uint sm, uint offset);
+
+bool get_pixel_high_score(int x, int y, int score);

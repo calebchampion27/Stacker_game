@@ -205,6 +205,14 @@ while (true) {
                     if (get_pixel_box_5(x, row + 16))                 data |= 0b001000;
                     if (get_pixel_box_6(x, row))                      data |= 0b000001;
                     if (get_pixel_box_6(x, row + 16))                 data |= 0b001000;
+                    if (get_pixel_for_tower(x, row))                  data |= 0b000001;
+                    if (get_pixel_for_tower(x, row + 16))             data |= 0b001000;
+                    if (get_pixel_for_stacker(x - 12, row))           data |= 0b000001;
+                    if (get_pixel_for_stacker(x - 12, row + 16))      data |= 0b001000;
+                    if (get_pixel_box_6(x, row))                      data |= 0b000001;
+                    if (get_pixel_box_6(x, row + 16))                 data |= 0b001000;
+                    if (get_pixel_high_score(x, row, high_score))      data |= 0b000001;
+                    if (get_pixel_high_score(x, row + 16, high_score)) data |= 0b001000;
                 } else if (app_state == 3) {
                     if (get_pixel_you_lost(x, row))      data |= 0b000001;
                     if (get_pixel_you_lost(x, row + 16)) data |= 0b001000;
