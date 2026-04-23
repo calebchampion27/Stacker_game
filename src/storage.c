@@ -7,8 +7,6 @@ void eeprom_init(void) {
   i2c_init(i2c0, 100000);
   gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
   gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
-
-
 }
 
 void eeprom_write_score(int score) {
